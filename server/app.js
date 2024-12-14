@@ -6,7 +6,7 @@ const dotenv = require("dotenv").config();
 const connectDB = require("./db/index");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-const indexRouter = require("./routes/auth-router");
+const userRouter = require("./routes/auth-router");
 const contactRouter = require("./routes/contact-router");
 // const errorMiddleware = require("./middlewares/errorMiddleware");
 
@@ -21,7 +21,10 @@ app.use(cookieParser()); // Cookie parser
 app.use(express.static(path.join(__dirname, "public"))); // Static files (if needed)
 
 // Use router for API endpoints
-app.use("/api/auth", indexRouter); // All routes in indexRouter will now start with /api/auth
+app.use("/api/user", userRouter); // All routes in indexRouter will now start with /api/auth
+app.use("/api/event", indexRouter);
+app.use("/api/admin", indexRouter);
+
 app.use("/", contactRouter); // All routes in contactRouter will now start with /
 
 // Error handling middleware should be at the bottom, after routes
