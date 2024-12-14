@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-// Generate a JWT token
 const generateToken = (user) => {
   return jwt.sign(
     {
@@ -12,7 +11,6 @@ const generateToken = (user) => {
   );
 };
 
-// Verify the JWT token
 const verifyToken = (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1]; // Extract the token from the Bearer string
   if (!token) {
@@ -20,7 +18,6 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    // Decode and verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // Attach the decoded user details to the request object
     next();

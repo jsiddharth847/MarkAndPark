@@ -82,7 +82,6 @@ const register = async (req, res) => {
   }
 };
 
-//API for login user
 const login = async (req, res) => {
   try {
     // Destructure email and password from the request body
