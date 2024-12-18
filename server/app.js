@@ -6,9 +6,17 @@ const dotenv = require("dotenv").config();
 const connectDB = require("./db/index");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-const indexRouter = require("./routes/auth-router");
+// const indexRouter = require("./routes/auth-router");
+
+const authRouter = require("./routes/auth-router");
 const contactRouter = require("./routes/contact-router");
+const userRouter = require("./routes/user-router");
+const eventRouter = require("./routes/event-router");
 // const errorMiddleware = require("./middlewares/errorMiddleware");
+
+// Importing middlewares
+//const { errorMiddleware } = require("./middlewares/errorMiddleware"); // Assuming you have a custom error middleware
+const { verifyToken, authorizeRoles } = require("./middlewares/authMiddleware");
 
 var app = express();
 
@@ -20,10 +28,11 @@ app.use(express.urlencoded({ extended: false })); // URL-encoded body parser
 app.use(cookieParser()); // Cookie parser
 app.use(express.static(path.join(__dirname, "public"))); // Static files (if needed)
 
-// Use router for API endpoints
-app.use("/api/auth", indexRouter); // All routes in indexRouter will now start with /api/auth
-app.use("/", contactRouter); // All routes in contactRouter will now start with /
+app.use("/api/auth", authRouter); // All routes in indexRouter will now start with /api/auth
+app.use("/api/user", verifyToken, userRouter);
+app.use("/", eventRouter); // User-related routes, protected by JWT middleware
 
+// s
 // Error handling middleware should be at the bottom, after routes
 // app.use(errorMiddleware);
 
