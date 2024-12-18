@@ -12,14 +12,83 @@ const home = async (req, res) => {
   }
 };
 
+// const register = async (req, res) => {
+//   try {
+//     console.log("Request body:", req.body);
+
+//     const { name, email, aadharNumber, password } = req.body;
+
+//     // Ensure all required fields are provided
+//     if (!name || !email || !aadharNumber || !password) {
+//       console.log(chalk.red("All fields are required"));
+//       return res.status(400).json({ error: "All fields are required" });
+//     }
+
+//     // Check if the user already exists with the given email
+//     console.log("Checking if user exists with email:", email);
+//     const userExist = await User.findOne({ email });
+
+//     if (userExist) {
+//       console.log(chalk.red("User already exists with this email"));
+//       return res.status(400).json({ error: "User already exists" });
+//     }
+
+//     // Check if the user already exists with the given Aadhar number
+//     const aadharExist = await User.findOne({ aadharNumber });
+//     if (aadharExist) {
+//       console.log(chalk.red("Aadhar number already registered"));
+//       return res
+//         .status(400)
+//         .json({ error: "Aadhar number already registered" });
+//     }
+
+//     // Hash the password before storing it
+//     const salt = await bcrypt.genSalt();
+//     const hashedPassword = await bcrypt.hash(password, salt);
+
+//     // Create a new user document
+//     const user = await User.create({
+//       name,
+//       email,
+//       aadharNumber,
+//       password: hashedPassword,
+//     });
+
+//     if (!user) {
+//       return res.status(400).json({
+//         error: "Failed to register user, please enter details properly.",
+//       });
+//     }
+
+//     // User registration successful
+//     console.log("User created:", user);
+
+//     // Generate token
+//     const token = generateToken(user);
+
+//     res.status(201).json({
+//       message: "User registered successfully",
+//       user: {
+//         id: user._id,
+//         name: user.name,
+//         email: user.email,
+//         aadharNumber: user.aadharNumber,
+//       },
+//       token,
+//     });
+//   } catch (err) {
+//     console.log("Error during registration:", err);
+//     res.status(500).json({ error: "Server Error" });
+//   }
+// };
 const register = async (req, res) => {
   try {
     console.log("Request body:", req.body);
 
-    const { name, email, aadharNumber, password } = req.body;
+    const { name, email, aadharNumber, password, phone } = req.body;
 
     // Ensure all required fields are provided
-    if (!name || !email || !aadharNumber || !password) {
+    if (!name || !email || !aadharNumber || !password || !phone) {
       console.log(chalk.red("All fields are required"));
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -42,6 +111,13 @@ const register = async (req, res) => {
         .json({ error: "Aadhar number already registered" });
     }
 
+    // Check if the phone number already exists
+    const phoneExist = await User.findOne({ phone });
+    if (phoneExist) {
+      console.log(chalk.red("Phone number already registered"));
+      return res.status(400).json({ error: "Phone number already registered" });
+    }
+
     // Hash the password before storing it
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -52,6 +128,7 @@ const register = async (req, res) => {
       email,
       aadharNumber,
       password: hashedPassword,
+      phone,
     });
 
     if (!user) {
@@ -73,6 +150,7 @@ const register = async (req, res) => {
         name: user.name,
         email: user.email,
         aadharNumber: user.aadharNumber,
+        phone: user.phone,
       },
       token,
     });
@@ -89,6 +167,7 @@ const login = async (req, res) => {
 
     // Check if email and password are provided
     if (!email || !password) {
+      console.log(chalk.yellow("Please provide email and password"));
       return res.status(400).json({ error: "Email and password are required" }); // Return error response if either is missing
     }
 
@@ -97,6 +176,7 @@ const login = async (req, res) => {
 
     // If no user is found, return an error
     if (!user) {
+      console.log(chalk.red("User not found"));
       return res.status(400).json({ error: "User not found" });
     }
 
@@ -114,9 +194,10 @@ const login = async (req, res) => {
     // Log the generated token for debugging purposes
     console.log("JWT token generated: " + token);
 
+    console.log(chalk.green("User Logged in Successfully"));
     // Return a success response with the token
-    res.json({
-      message: "User logged in successfully",
+    return res.json({
+      message: "User Logged in Successfully",
       token,
     });
   } catch (error) {
