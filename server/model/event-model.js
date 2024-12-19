@@ -1,11 +1,17 @@
+const mongoose = require("mongoose");
+
 const eventSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    date: { type: Date, required: true },
-    location: { type: String, required: true },
+    eventName: { type: String, required: true },
+    eventDate: { type: Date, required: true },
+    venue: { type: String, required: true },
     parkingSpots: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "ParkingSpot" },
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ParkingSpot",
+      },
     ],
+    // parkingSpots: { type: Number, required: true },
   },
   { timestamps: true }
 );
