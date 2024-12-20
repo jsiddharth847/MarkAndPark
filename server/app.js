@@ -12,6 +12,7 @@ const authRouter = require("./routes/auth-router");
 const contactRouter = require("./routes/contact-router");
 const userRouter = require("./routes/user-router");
 const eventRouter = require("./routes/event-router");
+const parkingspotRouter = require("./routes/parkingspot-router");
 // const errorMiddleware = require("./middlewares/errorMiddleware");
 
 // Importing middlewares
@@ -31,7 +32,7 @@ app.use(express.static(path.join(__dirname, "public"))); // Static files (if nee
 app.use("/api/auth", authRouter); // All routes in indexRouter will now start with /api/auth
 app.use("/api/user", verifyToken, userRouter);
 app.use("/", eventRouter); // User-related routes, protected by JWT middleware
-
+app.use("/", parkingspotRouter); // User-related handlers
 // s
 // Error handling middleware should be at the bottom, after routes
 // app.use(errorMiddleware);
