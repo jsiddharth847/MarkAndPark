@@ -48,20 +48,69 @@ const getAllEvents = async (req, res) => {
 //   }
 // };
 
+// const createEvent = async (req, res) => {
+//   try {
+//     const { eventName, eventDate, venue, parkingSpots } = req.body;
+
+//     // Validate required fields  !parkingSpots
+//     if (!eventName || !eventDate || !venue) {
+//       console.log("Missing required fields");
+//       return res.status(400).json({ error: "All fields are required" });
+//     }
+
+//     // Validate eventDate
+//     const parsedDate = new Date(eventDate);
+//     if (isNaN(parsedDate.getTime()) || parsedDate <= new Date()) {
+//       console.log("Invalid or past event date");
+//       return res
+//         .status(400)
+//         .json({ error: "Event date must be a valid future date" });
+//     }
+
+//     // Validate parkingSpots
+//     if (typeof parkingSpots !== "number" || parkingSpots <= 0) {
+//       console.log("Invalid parking spots value");
+//       return res
+//         .status(400)
+//         .json({ error: "Parking spots must be a positive number" });
+//     }
+
+//     // Create the event
+//     const event = await Event.create({
+//       eventName,
+//       eventDate: parsedDate,
+//       venue,
+//       parkingSpots,
+//     });
+
+//     if (!event) {
+//       console.log("Failed to create event");
+//       return res.status(500).json({ error: "Failed to create event" });
+//     }
+
+//     console.log("Event created successfully:", event);
+//     return res.status(201).json({ msg: "Event created successfully", event });
+//   } catch (err) {
+//     console.log("Error in creating event:", err);
+//     res.status(500).json({ error: "Server Error" });
+//   }
+// };
+
 const createEvent = async (req, res) => {
   try {
-    const { eventName, eventDate, venue, parkingSpots } = req.body;
+    const { eventName, eventDate, venue, parkingSpots, profilepicture } =
+      req.body;
 
     // Validate required fields
-    if (!eventName || !eventDate || !venue || !parkingSpots) {
-      console.log("Missing required fields");
+    if (!eventName || !eventDate || !venue || parkingSpots === undefined) {
+      console.error("Missing required fields");
       return res.status(400).json({ error: "All fields are required" });
     }
 
     // Validate eventDate
     const parsedDate = new Date(eventDate);
     if (isNaN(parsedDate.getTime()) || parsedDate <= new Date()) {
-      console.log("Invalid or past event date");
+      console.error("Invalid or past event date");
       return res
         .status(400)
         .json({ error: "Event date must be a valid future date" });
@@ -69,11 +118,16 @@ const createEvent = async (req, res) => {
 
     // Validate parkingSpots
     if (typeof parkingSpots !== "number" || parkingSpots <= 0) {
-      console.log("Invalid parking spots value");
+      console.error("Invalid parking spots value");
       return res
         .status(400)
         .json({ error: "Parking spots must be a positive number" });
     }
+
+    // Set profilepicture to default if not provided
+    const defaultProfilePicture =
+      "http://localhost:3000/static/media/card4.a99ca89ff783e569b99a.avif";
+    const finalProfilePicture = profilepicture || defaultProfilePicture;
 
     // Create the event
     const event = await Event.create({
@@ -81,17 +135,18 @@ const createEvent = async (req, res) => {
       eventDate: parsedDate,
       venue,
       parkingSpots,
+      profilepicture: finalProfilePicture,
     });
 
     if (!event) {
-      console.log("Failed to create event");
+      console.error("Failed to create event");
       return res.status(500).json({ error: "Failed to create event" });
     }
 
     console.log("Event created successfully:", event);
     return res.status(201).json({ msg: "Event created successfully", event });
   } catch (err) {
-    console.log("Error in creating event:", err);
+    console.error("Error in creating event:", err.message);
     res.status(500).json({ error: "Server Error" });
   }
 };

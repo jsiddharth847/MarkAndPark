@@ -9,9 +9,15 @@ const signupSchema = require("../validator/auth-validator");
 const validate = require("../middlewares/validate-middleware");
 
 const authController = require("../Controllers/auth-controller");
+const {
+  verifyToken,
+  authorizeRoles,
+} = require("../middlewares/authMiddleware");
 
 router.route("/").get(authController.home);
 // router.route("/register").post(authController.register);
+router.route("/otp").post(authController.sendOTP);
+router.route("/user").get(verifyToken, authController.getUser);
 router.route("/register").post(validate(signupSchema), authController.register);
 router.route("/login").post(authController.login);
 

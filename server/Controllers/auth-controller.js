@@ -2,6 +2,21 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user-model");
 const { generateToken } = require("../middlewares/authMiddleware");
 const chalk = require("chalk");
+const {
+  generateOTP,
+  sendOTPEmail,
+  storeOTP,
+  verifyOTP,
+} = require("../utils/nodemailer");
+
+const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching user details" });
+  }
+};
 
 const home = async (req, res) => {
   try {
@@ -9,6 +24,20 @@ const home = async (req, res) => {
   } catch (err) {
     console.log("Error in home route:", err);
     res.status(500).send("Server Error");
+  }
+};
+
+const sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const otp = generateOTP(); // Generate OTP
+
+    storeOTP(email, otp); // Store OTP with expiration
+    await sendOTPEmail(email, otp); // Send OTP email
+
+    res.status(200).json({ message: "OTP sent successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to send OTP" });
   }
 };
 
@@ -85,7 +114,12 @@ const register = async (req, res) => {
   try {
     console.log("Request body:", req.body);
 
-    const { name, email, aadharNumber, password, phone } = req.body;
+    const { name, email, password, phone, otp } = req.body;
+
+    // Check if OTP is correct and not expired
+    if (!verifyOTP(email, otp)) {
+      return res.status(400).json({ error: "Invalid or expired OTP" });
+    }
 
     // Ensure all required fields are provided
     if (!name || !email || !aadharNumber || !password || !phone) {
@@ -209,4 +243,4 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { home, register, login };
+module.exports = { home, register, login, sendOTP, getUser };
