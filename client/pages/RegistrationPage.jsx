@@ -9,7 +9,7 @@
 //     phone: "",
 //     aadharNumber: "",
 //     password: "",
-//   });
+//   });--------------------------
 
 //   const [loading, setLoading] = useState(false);
 
