@@ -5,7 +5,7 @@
 // const RegistrationPage = () => {
 //   const [formData, setFormData] = useState({
 //     name: "",
-//     email: "",
+//     email: "",------------------
 //     phone: "",
 //     aadharNumber: "",
 //     password: "",
